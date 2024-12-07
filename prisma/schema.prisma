@@ -1,0 +1,120 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  admin
+  user
+}
+
+enum Status {
+  kembali
+  dipinjam
+  hilang
+}
+
+model user {
+  id              Int      @id @default(autoincrement())
+  uuid            String   @default("")
+  username        String   @unique @default("")
+  password        String   @default("")
+  role            Role     @default(user)
+  createdAt       DateTime @default(now())
+  updateAt        DateTime @updatedAt
+  peminjaman      Peminjaman[]
+}
+
+model Barang {
+  id_barang Int @id @default(autoincrement())
+  nama String
+  category String
+  location String
+  quantity Int
+  is_deleted Boolean @default(false)
+  peminjaman Peminjaman[]
+}
+
+model Peminjaman {
+  id_peminjaman Int @id @default(autoincrement())
+  id_user Int
+  id_barang Int
+  quantity Int
+  borrow_date DateTime @db.Date
+  return_date DateTime @db.Date
+  status Status @default(dipinjam)
+  barang Barang @relation(fields: [id_barang], references: [id_barang])
+  user user @relation(fields: [id_user], references: [id])
+}
+
+
+//enum role {
+  //ADMIN
+  //USER
+//}
+
+//enum status_inventory {
+  //AVAILABLE
+  //UNAVAILABLE
+//}
+
+//enum status_borrowed {
+  //BORROWED
+  //RETURNED
+  //LATE
+//}
+
+//model user {
+  //id_user   Int         @id @default(autoincrement())
+  //username  String      @unique @default("")
+  //password  String      @default("")
+  //role      role        @default(ADMIN)
+  //borrowing borrowing[]
+//}
+
+//model inventory {
+  //id_inventory Int              @id @default(autoincrement())
+  //name         String           @default("")
+  //description  String           @default("")
+  //category     String           @default("")
+  //location     String           @default("")
+  //quantity     Int              @default(0)
+  //status       status_inventory @default(AVAILABLE)
+  //created_at   DateTime         @default(now())
+  //updated_at   DateTime         @updatedAt
+  //borrowing    borrowing[]
+//}
+
+//model borrowing {
+  //id_borrowing Int             @id @default(0)
+  //id_user      Int             @default(0)
+  //id_inventory Int             @default(0)
+  //borrow_date  DateTime        @default(now())
+  //return_date  DateTime        @updatedAt
+  //status       status_borrowed @default(BORROWED)
+  //remarks      String
+
+  //inventory             inventory @relation(fields: [id_inventory], references: [id_inventory])
+  //user                  user      @relation(fields: [id_user], references: [id_user])
+  //inventoryId_inventory Int?
+//}
+
+//model Report {
+  //id_report    Int      @id @default(0)
+  //id_inventory Int      @default(0)
+  //start_date   DateTime @default(now())
+  //end_date     DateTime @updatedAt
+  //borrow_count Int      @default(0)
+//late_count   Int      @default(0)
+//created_at   DateTime @default(now())
+//}
